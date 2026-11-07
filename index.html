@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#1d0a26">
+<title>Tere liye 🌸</title>
+<style>
+:root{--fg:#fff4fa;--glow:rgba(255,120,190,.85);--sa-t:env(safe-area-inset-top,0px);--sa-b:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:#1d0a26;overflow:hidden;font-family:Georgia,'Times New Roman',serif;color:var(--fg);touch-action:none;overscroll-behavior:none;-webkit-user-select:none;user-select:none}
+#gl{position:fixed;left:0;top:0;width:100%;height:100%;display:block}
+#vid{position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none}
+body.nogl #vid{width:100%;height:100%;opacity:1;object-fit:cover}
+/* colour grade: sirf CSS overlay, video ke pixels ko haath nahi lagaya */
+#grade{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 54%,rgba(48,6,62,.46) 100%),linear-gradient(180deg,rgba(255,196,226,.05),rgba(150,40,130,.08))}
+#shade{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;opacity:0;transition:opacity 2s ease;background:radial-gradient(ellipse at center,rgba(38,4,50,.66) 0%,rgba(38,4,50,.42) 65%,rgba(38,4,50,.5) 100%)}
+body.end #shade{opacity:1}
+#grain{position:fixed;left:-20%;top:-20%;width:140%;height:140%;opacity:.5;pointer-events:none;animation:gr .5s steps(5) infinite}
+@keyframes gr{0%{transform:translate(0,0)}20%{transform:translate(-4%,2%)}40%{transform:translate(3%,-5%)}60%{transform:translate(-2%,4%)}80%{transform:translate(5%,1%)}100%{transform:translate(0,0)}}
+.txt{text-shadow:0 0 14px var(--glow),0 0 34px rgba(255,90,170,.55),0 2px 26px rgba(110,10,80,.85)}
+#intro{position:fixed;left:0;right:0;top:calc(13% + var(--sa-t));text-align:center;padding:0 6vw;pointer-events:none;font-style:italic;font-size:clamp(24px,5.4vw,48px);letter-spacing:.04em;opacity:0;transform:translateY(10px);transition:opacity 1.6s ease,transform 2.6s ease}
+#intro.on{opacity:1;transform:none}
+#endbox{position:fixed;left:0;top:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:0 7vw;pointer-events:none;opacity:0;transition:opacity 1.4s ease}
+body.end #endbox{opacity:1}
+#msg{text-align:center;white-space:pre-wrap;font-size:clamp(18px,3.5vw,32px);line-height:1.8;min-height:3em;max-width:900px}
+.cur{display:inline-block;width:.08em;height:1.05em;margin-left:2px;vertical-align:-.15em;background:var(--fg);animation:bl 1s steps(1) infinite;box-shadow:0 0 10px var(--glow)}
+body.done .cur{opacity:.0;animation:none}
+@keyframes bl{50%{opacity:0}}
+#again{pointer-events:none;opacity:0;transition:opacity 1.2s ease .3s;font:inherit;font-size:17px;letter-spacing:.05em;color:var(--fg);padding:13px 30px;border-radius:40px;border:1px solid rgba(255,205,230,.55);background:rgba(255,150,200,.14);box-shadow:0 0 26px rgba(255,120,190,.35);cursor:pointer}
+body.done #again{opacity:1;pointer-events:auto}
+#again:active{transform:scale(.97)}
+#hint{position:fixed;left:0;right:0;bottom:calc(22px + var(--sa-b));text-align:center;pointer-events:none;font-size:13px;letter-spacing:.06em;opacity:0;transition:opacity 1.4s ease}
+#hint.on{opacity:.7}
+#snd{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + var(--sa-t));width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,205,230,.35);background:rgba(40,8,56,.42);color:var(--fg);font-size:18px;line-height:1;cursor:pointer;z-index:20;opacity:0;pointer-events:none;transition:opacity .8s ease}
+body.go #snd{opacity:1;pointer-events:auto}
+/* hidden spot: bahut halka, dabane pe secret message */
+#sec{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + var(--sa-b));width:52px;height:52px;border:0;background:transparent;color:var(--fg);font-size:20px;opacity:0;pointer-events:none;cursor:pointer;z-index:20}
+body.go #sec{opacity:.2;pointer-events:auto;animation:pl 3.2s ease-in-out infinite}
+body.end #sec{opacity:0;pointer-events:none;animation:none}
+@keyframes pl{50%{opacity:.07}}
+#secret{position:fixed;left:0;right:0;bottom:calc(16% + var(--sa-b));text-align:center;padding:0 8vw;white-space:pre-wrap;pointer-events:none;font-style:italic;font-size:clamp(18px,3.6vw,30px);line-height:1.7;opacity:0;transform:translateY(8px);transition:opacity 1.2s ease,transform 1.6s ease}
+#secret.on{opacity:1;transform:none}
+#start{position:fixed;left:0;top:0;right:0;bottom:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;text-align:center;padding:0 8vw;background:radial-gradient(ellipse at center,rgba(70,14,92,.35),rgba(24,4,36,.72));transition:opacity 1s ease}
+#start.gone{opacity:0;pointer-events:none}
+#sh{font-size:54px;animation:fl 3.4s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-8px) rotate(6deg)}}
+#st{font-size:clamp(24px,5vw,36px);font-style:italic;letter-spacing:.05em}
+#ss{font-size:14px;opacity:.75;letter-spacing:.06em}
+#dbg{position:fixed;left:6px;top:6px;z-index:50;font:11px/1.35 monospace;color:#9f9;background:rgba(0,0,0,.55);padding:4px 6px;pointer-events:none;white-space:pre;display:none}
+</style></head><body>
+<canvas id="gl"></canvas>
+<video id="vid" src="reel.mp4" muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+<div id="grade"></div><div id="shade"></div><div id="grain"></div>
+<div id="intro" class="txt"></div>
+<div id="endbox"><div id="msg" class="txt"><span id="mt"></span><span class="cur"></span></div><button id="again" class="txt" type="button">dobara dekho 🌸</button></div>
+<div id="secret" class="txt"></div>
+<div id="hint" class="txt">drag karke dekho · tap karo = petals 🌸</div>
+<button id="snd" type="button" aria-label="sound">🔊</button>
+<button id="sec" type="button" aria-label="secret">✿</button>
+<div id="start"><div id="sh">🌸</div><div id="st" class="txt">Tap to begin</div><div id="ss" class="txt">sound on rakhna ♡</div></div>
+<div id="dbg"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   TUNE YAHAN SE  (sab constants top par)
+   ===================================================================== */
+const NAAM    = "Meri Jaan";                       // <- uska naam / pyaar ka naam
+const MESSAGE = "Jab tu hansti hai,\nmere liye sab kuch pink ho jaata hai 🌸\n\nJaise ye petals bina bataaye aa jaate hain,\ntu bhi meri zindagi mein aayi,\naur sab kuch khoobsurat ho gaya.\n\nHamesha tere saath. ♡";   // <- apna lamba message (\n = nayi line)
+const SECRET  = "Psst… tune mujhe dhoondh liya 🤍\nI love you, hamesha.";    // hidden ✿ (neeche-left kone) dabane pe
+
+const INTENSITY = [          // [video second, petal-storm intensity 0..1]  (reel ke hisaab se tune karo)
+  [0,.28],[3,.40],[5,.30],[7,.18],[10,.28],[13,.50],[15.5,.75],[18,.95],[21,1],[30,1]
+];
+const PARALLAX   = .55;      // drag parallax strength (world units; badhao = zyada depth)
+const PAN_MAX    = 2.4;      // narrow/phone screen par video kitna side-pan kare
+const MAXYAW = 25, MAXPITCH = 25;   // drag ki range (degrees)
+const CAM_YAW = .18, CAM_PITCH = .08; // us range ka kitna hissa asli camera rotation (video flat hai)
+const BURST_COUNT = 64;      // tap pe kitne petals (50-80)
+const INTRO   = [.4, 4.4];   // opening text kab aaye/jaaye (video seconds)
+const TYPE_CPS = 20;         // typewriter speed (chars/sec)
+const MIST_OPACITY = 1, RAYS = 1, FLARE = 1;   // 0 = band
+const VIDEO_SRC = "reel.mp4";
+
+/* ===================== helpers / state ===================== */
+const $=id=>document.getElementById(id);
+const clamp=(x,a,b)=>x<a?a:x>b?b:x, lerp=(a,b,t)=>a+(b-a)*t, rnd=(a,b)=>a+Math.random()*(b-a);
+const sstep=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)};
+function curveAt(t){const A=INTENSITY;if(t<=A[0][0])return A[0][1];for(let i=1;i<A.length;i++)if(t<=A[i][0])return lerp(A[i-1][1],A[i][1],sstep(A[i-1][0],A[i][0],t));return A[A.length-1][1]}
+
+let qp=1, adj=0, PR=null;          // adaptive quality (test: adj=99;qp=1)
+const G={tOverride:null,I:0,yaw:0,pitch:0,jsMs:0,fps:0,S:null,vid:null,tick:null,ended:false};
+const vid=$('vid');G.vid=vid;
+const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform));
+let started=false,ended=false,soundOn=true;
+$('intro').textContent='Ye tere liye, '+NAAM+' 🌸';
+{ // film grain tile (CSS overlay, halka)
+  const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),im=g.createImageData(128,128);
+  for(let i=0;i<128*128;i++){const v=Math.random()*255;im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=v;im.data[i*4+3]=11}
+  g.putImageData(im,0,0);$('grain').style.backgroundImage='url('+c.toDataURL()+')';
+}
+
+/* ===================== video control ===================== */
+function syncSnd(){$('snd').textContent=(vid.muted?'🔇':'🔊')}
+function begin(){
+  if(started)return;started=true;
+  $('start').classList.add('gone');document.body.classList.add('go');
+  vid.muted=false;vid.volume=1;
+  const p=vid.play();
+  const fallback=()=>{vid.muted=true;syncSnd();const q=vid.play();if(q&&q.catch)q.catch(()=>{started=false;$('start').classList.remove('gone');document.body.classList.remove('go')})};
+  if(p&&p.catch)p.catch(fallback);
+  syncSnd();
+}
+$('start').addEventListener('click',begin);
+$('snd').addEventListener('click',()=>{vid.muted=!vid.muted;syncSnd()});
+vid.addEventListener('ended',()=>{ended=true;G.ended=true;endT=0;document.body.classList.add('end')});
+vid.addEventListener('error',()=>{$('st').textContent='reel.mp4 nahi mili 😔';$('ss').textContent='file index.html ke saath rakho aur http se kholo (file:// se nahi)'});
+document.addEventListener('visibilitychange',()=>{if(!started||ended)return;if(document.hidden)vid.pause();else{const p=vid.play();if(p&&p.catch)p.catch(()=>{})}});
+function replay(){
+  ended=false;G.ended=false;typed=0;shown=-1;$('mt').textContent='';
+  document.body.classList.remove('end','done');introOn=false;
+  vid.currentTime=0;const p=vid.play();if(p&&p.catch)p.catch(()=>{});
+}
+$('again').addEventListener('click',replay);
+
+/* ===================== input (pointer events) ===================== */
+let yawT=0,pitchT=0,yaw=0,pitch=0,vYaw=0,vPitch=0,dragging=false,pid=-1,px=0,py=0,sx0=0,sy0=0,moved=0,downAt=0,lastAct=0,clk=0;
+addEventListener('pointerdown',e=>{
+  if(!started||e.target.closest('button'))return;
+  dragging=true;pid=e.pointerId;px=sx0=e.clientX;py=sy0=e.clientY;moved=0;downAt=performance.now();vYaw=vPitch=0;lastAct=clk;
+});
+addEventListener('pointermove',e=>{
+  if(!dragging||e.pointerId!==pid)return;
+  const dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);
+  const ky=1/(.45*innerWidth),kp=1/(.45*innerHeight);
+  yawT=clamp(yawT+dx*ky,-1,1);pitchT=clamp(pitchT+dy*kp,-1,1);
+  vYaw=lerp(vYaw,dx*ky,.5);vPitch=lerp(vPitch,dy*kp,.5);lastAct=clk;
+});
+function endDrag(e,cancel){
+  if(!dragging||e.pointerId!==pid)return;dragging=false;
+  yawT=clamp(yawT+vYaw*6,-1,1);pitchT=clamp(pitchT+vPitch*6,-1,1);   // halka inertia
+  if(!cancel&&moved<10&&performance.now()-downAt<500){if(S)S.burst(e.clientX,e.clientY,BURST_COUNT)}
+}
+addEventListener('pointerup',e=>endDrag(e,false));
+addEventListener('pointercancel',e=>endDrag(e,true));
+{ let secT=0;
+  $('sec').addEventListener('click',()=>{const el=$('secret');el.textContent=SECRET;el.classList.add('on');if(S)S.burst(innerWidth*.12,innerHeight*.9,BURST_COUNT);clearTimeout(secT);secT=setTimeout(()=>el.classList.remove('on'),7000)});
+}
+
+/* ===================== 3D foreground ===================== */
+let R=null,S=null;
+try{if(window.THREE){R=new THREE.WebGLRenderer({canvas:$('gl'),antialias:!mobile,alpha:false,depth:false,stencil:false,powerPreference:'high-performance'})}}catch(e){console.error(e);R=null}
+function buildScene(){
+const FOV=40,tanH=Math.tan(FOV*Math.PI/360),D=10,rad=x=>x*Math.PI/180;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x1d0a26);
+const cam=new THREE.PerspectiveCamera(FOV,1,.05,40);scene.add(cam);
+let asp=1,W=1,H=1,PRnow=0;const basePR=Math.min(window.devicePixelRatio||1,1.25);
+const d=new THREE.Object3D(),col=new THREE.Color();
+const NOPT={transparent:true,depthTest:false,depthWrite:false,fog:false};
+function tex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.generateMipmaps=false;t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;return t}
+
+/* ---- textures ---- */
+const petalTex=tex(64,64,g=>{const gr=g.createLinearGradient(0,60,0,4);gr.addColorStop(0,'#d7b4c6');gr.addColorStop(.5,'#ffeaf4');gr.addColorStop(1,'#fff');
+  g.fillStyle=gr;g.shadowColor='rgba(255,255,255,.9)';g.shadowBlur=2.5;g.beginPath();g.moveTo(32,61);g.bezierCurveTo(8,46,6,16,32,3);g.bezierCurveTo(58,16,56,46,32,61);g.fill();
+  g.shadowBlur=0;g.strokeStyle='rgba(170,90,130,.28)';g.lineWidth=1;g.beginPath();g.moveTo(32,58);g.lineTo(32,10);g.stroke()});
+const bokehTex=tex(128,128,g=>{const gr=g.createRadialGradient(64,64,4,64,64,48);gr.addColorStop(0,'rgba(255,255,255,.5)');gr.addColorStop(.7,'rgba(255,255,255,.78)');gr.addColorStop(1,'rgba(255,255,255,.95)');
+  g.shadowColor='#fff';g.shadowBlur=16;g.fillStyle=gr;g.beginPath();g.moveTo(64,112);g.bezierCurveTo(30,92,28,34,64,14);g.bezierCurveTo(100,34,98,92,64,112);g.fill()});
+const glowTex=tex(64,64,g=>{const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,.95)');gr.addColorStop(.35,'rgba(255,255,255,.35)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64)});
+const ringTex=tex(64,64,g=>{const gr=g.createRadialGradient(32,32,10,32,32,31);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.78,'rgba(255,255,255,.5)');gr.addColorStop(.9,'rgba(255,255,255,.22)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64)});
+const mistTex=tex(128,128,g=>{const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,225,245,.6)');gr.addColorStop(.45,'rgba(255,225,245,.26)');gr.addColorStop(1,'rgba(255,225,245,0)');g.fillStyle=gr;g.fillRect(0,0,128,128)});
+const raysTex=tex(256,256,g=>{g.translate(128,128);for(let i=0;i<40;i++){g.rotate(rnd(.1,.3));const gr=g.createLinearGradient(0,0,128,0);gr.addColorStop(0,'rgba(255,225,240,'+rnd(.15,.5)+')');gr.addColorStop(1,'rgba(255,225,240,0)');g.fillStyle=gr;g.beginPath();g.moveTo(0,0);g.lineTo(128,-rnd(2,9));g.lineTo(128,rnd(2,9));g.fill()}});
+
+/* ---- video (curved plane, ek hi decode) ---- */
+const vtex=new THREE.VideoTexture(vid);vtex.generateMipmaps=false;vtex.minFilter=THREE.LinearFilter;vtex.magFilter=THREE.LinearFilter;
+const vgeo=new THREE.PlaneGeometry(1,1,32,1),vp=vgeo.attributes.position;
+for(let i=0;i<vp.count;i++){const x=vp.getX(i);vp.setZ(i,x*x*1.6)}      // halka curve, edges camera ki taraf
+const vmesh=new THREE.Mesh(vgeo,new THREE.MeshBasicMaterial({map:vtex,toneMapped:false,depthTest:false,depthWrite:false}));
+vmesh.position.z=-D;vmesh.renderOrder=-10;vmesh.frustumCulled=false;scene.add(vmesh);
+const refreshTex=()=>{if(vid.readyState>=2)vtex.needsUpdate=true};
+vid.addEventListener('loadeddata',()=>{refreshTex();layout()});vid.addEventListener('seeked',refreshTex);
+
+/* ---- foreground data ---- */
+const NP=520,NB=36,ND=240,NM=6,BP=160;
+const P=new Float32Array(NP*12),BK=new Float32Array(NB*12),DU=new Float32Array(ND*6),BU=new Float32Array(BP*16);
+// petal geometry (halka bent)
+const pg=new THREE.PlaneGeometry(1,1.4,2,4),pgp=pg.attributes.position;
+for(let i=0;i<pgp.count;i++){const x=pgp.getX(i),y=pgp.getY(i);pgp.setZ(i,x*x*.7+y*y*.12)}
+const petals=new THREE.InstancedMesh(pg,new THREE.MeshBasicMaterial({map:petalTex,side:THREE.DoubleSide,opacity:.95,...NOPT}),NP);
+const bokeh=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1.2),new THREE.MeshBasicMaterial({map:bokehTex,opacity:.5,...NOPT}),NB);
+const burst=new THREE.InstancedMesh(pg,new THREE.MeshBasicMaterial({map:petalTex,side:THREE.DoubleSide,opacity:.97,...NOPT}),BP);
+[petals,bokeh,burst].forEach(m=>{m.frustumCulled=false});
+petals.renderOrder=4;bokeh.renderOrder=7;burst.renderOrder=8;
+function pickCol(c,z){const r=Math.random();
+  if(r<.12)c.setHSL(.95,.3,.9);else if(r<.22)c.setHSL(rnd(.76,.82),.45,rnd(.78,.88));else c.setHSL(rnd(.88,.985),rnd(.45,.92),rnd(.62,.86));
+  const f=clamp((-z-1.2)/7,0,1)*.38;c.r=lerp(c.r,.96,f);c.g=lerp(c.g,.80,f);c.b=lerp(c.b,.92,f);return c}
+for(let i=0;i<NP;i++){const o=i*12,z=-rnd(1.2,8);P[o+2]=z;
+  const a=Math.random()<.06?rnd(.04,.07):rnd(.011,.032);P[o+9]=a*2*tanH*(-z)/1.4;
+  P[o+3]=rnd(0,6.3);P[o+4]=rnd(0,6.3);P[o+5]=rnd(0,6.3);P[o+6]=rnd(-2.2,2.2);P[o+7]=rnd(-2.2,2.2);P[o+8]=rnd(-2.2,2.2);
+  petals.setColorAt(i,pickCol(col,z));d.position.set(0,0,z);d.scale.setScalar(0);d.updateMatrix();petals.setMatrixAt(i,d.matrix)}
+for(let i=0;i<NB;i++){const o=i*12,z=-rnd(1,2.3);BK[o+2]=z;const a=rnd(.07,.17);BK[o+9]=a*2*tanH*(-z)/1.2;BK[o+5]=rnd(0,6.3);BK[o+6]=rnd(-.5,.5);
+  bokeh.setColorAt(i,pickCol(col,-2));d.position.set(0,0,z);d.scale.setScalar(0);d.updateMatrix();bokeh.setMatrixAt(i,d.matrix)}
+for(let i=0;i<BP;i++){BU[i*16+13]=1;BU[i*16+14]=1;burst.setColorAt(i,col.setHSL(rnd(.86,.98),rnd(.5,.95),rnd(.66,.9)));d.scale.setScalar(0);d.updateMatrix();burst.setMatrixAt(i,d.matrix)}
+burst.visible=false;
+scene.add(petals);scene.add(bokeh);scene.add(burst);
+
+// mist sheets (kam, bade, halke)
+const mist=[];for(let i=0;i<NM;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:mistTex,color:i%2?0xffd8f0:0xffffff,opacity:0,...NOPT}));
+  s.renderOrder=1;mist.push({s,z:-rnd(3.5,8.5),xn:rnd(-.8,.8),yn:rnd(-.85,.1),wn:rnd(1.1,1.6),hn:rnd(.4,.65),ph:rnd(0,6.3),op:rnd(.1,.17)});scene.add(s)}
+// god rays
+const rays=new THREE.Sprite(new THREE.SpriteMaterial({map:raysTex,blending:THREE.AdditiveBlending,opacity:0,...NOPT}));rays.renderOrder=2;scene.add(rays);
+// dust (Points)
+const dpos=new Float32Array(ND*3),dgeo=new THREE.BufferGeometry();dgeo.setAttribute('position',new THREE.BufferAttribute(dpos,3).setUsage(THREE.DynamicDrawUsage));
+for(let i=0;i<ND;i++){DU[i*6+2]=-rnd(1.5,9);DU[i*6+3]=rnd(0,6.3);DU[i*6+4]=rnd(.4,1)}
+const dust=new THREE.Points(dgeo,new THREE.PointsMaterial({size:.09,map:glowTex,color:0xffe9d8,opacity:.6,blending:THREE.AdditiveBlending,sizeAttenuation:true,...NOPT}));dust.frustumCulled=false;dust.renderOrder=5;scene.add(dust);
+// lens flare (camera ke child, screen-space)
+const FL=[[.6,.22,0xffb0d8,glowTex],[-.4,.16,0xa8d8ff,ringTex],[-.85,.11,0xffe0a0,glowTex],[-1.3,.26,0xd8a8ff,ringTex]].map(a=>{
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:a[3],color:a[2],blending:THREE.AdditiveBlending,opacity:0,...NOPT}));s.renderOrder=9;cam.add(s);return{s,k:a[0],sz:a[1]}});
+const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xffb8dc,blending:THREE.AdditiveBlending,opacity:0,...NOPT}));flash.renderOrder=10;scene.add(flash);
+let flashT=9,flashX=0,flashY=0;
+
+/* ---- layout (resize) ---- */
+let Cx=PARALLAX,Cy=PARALLAX*.55,vA=960/460;
+function layout(){
+  vA=(vid.videoWidth&&vid.videoHeight)?vid.videoWidth/vid.videoHeight:960/460;
+  const hh=D*tanH,hw=hh*asp,rotX=D*Math.tan(rad(MAXYAW*CAM_YAW)),rotY=D*Math.tan(rad(MAXPITCH*CAM_PITCH));
+  let cx=PARALLAX,cy=PARALLAX*.55,ph=Math.max(hh+rotY+cy+.1,(hw+rotX+cx+.1)/vA),pw=ph*vA;
+  if(asp<vA*.85){ph=hh+rotY+cy+.1;pw=ph*vA;cx=Math.max(PARALLAX,Math.min(PAN_MAX,pw-(hw+rotX+.1)))}   // phone/narrow: video pe side-pan
+  Cx=cx;Cy=cy;vmesh.scale.set(2*pw,2*ph,1);
+  for(const m of mist){const hz=-m.z*tanH,wz=hz*asp;m.s.scale.set(Math.max(wz*2*m.wn,hz*2*m.wn),hz*2*m.hn,1)}
+  const hr=D*.94*tanH;rays.scale.set(hr*3.6,hr*3.6,1);rays.position.set(-hr*asp*.42,hr*.72,-D*.94);
+}
+function applyPR(){
+  const pr=PR!=null?PR:Math.max(.6,basePR*(.5+.5*qp));
+  if(Math.abs(pr-PRnow)>.03){PRnow=pr;R.setPixelRatio(pr);R.setSize(W,H,false)}
+}
+function resize(){W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);asp=W/H;PRnow=0;cam.aspect=asp;cam.updateProjectionMatrix();applyPR();layout()}
+
+/* ---- wind (analytic curl-style) ---- */
+let wu=0,wv=0;
+function wind(x,y,z,t){const a=.7*x+.5*t,b=.6*y-.4*t,a2=1.7*x+.9*z-.7*t,b2=1.3*y+.6*z+.5*t;
+  wu=-.6*Math.sin(a)*Math.sin(b)-.65*Math.sin(a2)*Math.sin(b2);wv=-(.7*Math.cos(a)*Math.cos(b)+.85*Math.cos(a2)*Math.cos(b2))}
+function respawn(a,o,z,first,padk){const hh=-z*tanH,hw=hh*asp*1.12,pad=.5+(-z)*.1*padk,cx=cam.position.x,cy=cam.position.y;
+  if(first){a[o]=cx+rnd(-1,1)*(hw+pad);a[o+1]=cy+rnd(-1,1)*(hh+pad)}
+  else if(Math.random()<.55){a[o]=cx+hw+pad*rnd(.2,1);a[o+1]=cy+rnd(-1,1)*(hh+pad)}
+  else{a[o]=cx+rnd(-1,1)*(hw+pad);a[o+1]=cy+hh+pad*rnd(.2,1)}}
+for(let i=0;i<NP;i++)respawn(P,i*12,P[i*12+2],true,1);
+for(let i=0;i<NB;i++)respawn(BK,i*12,BK[i*12+2],true,1);
+for(let i=0;i<ND;i++){respawn(DU,i*6,DU[i*6+2],true,1)}
+
+/* ---- per-frame ---- */
+let bAny=false,bNext=0;
+function update(dt,t,I,yawN,pitchN,qpv,calm){
+  // camera: parallax (translate) + halka rotation
+  cam.position.set(-yawN*Cx,pitchN*Cy,0);cam.rotation.set(pitchN*rad(MAXPITCH)*CAM_PITCH,yawN*rad(MAXYAW)*CAM_YAW,0);
+  const pf=clamp(asp/1.2,.55,1),cx=cam.position.x,cy=cam.position.y;
+  // ---- petals ----
+  {const actF=NP*qpv*pf*(.16+.84*I)*calm,n=Math.min(NP,Math.ceil(actF)),U=-(.35+1.05*I),V=-(.14+.4*I),ca=.45+.75*I,rs=.7+1.6*I;
+   for(let i=0;i<n;i++){const o=i*12;let x=P[o],y=P[o+1];const z=P[o+2];
+     wind(x,y,z,t);x+=(U+wu*ca)*dt;y+=(V+wv*ca*.8)*dt;
+     const hh=-z*tanH,hw=hh*asp*1.12,m=.5+(-z)*.1;
+     if(x<cx-hw-m||y<cy-hh-m||x>cx+hw+m+1.2||y>cy+hh+m+1.2){respawn(P,o,z,false,1);x=P[o];y=P[o+1]}else{P[o]=x;P[o+1]=y}
+     const rx=P[o+3]+=P[o+6]*dt*rs,ry=P[o+4]+=P[o+7]*dt*rs,rz=P[o+5]+=P[o+8]*dt*rs;
+     d.position.set(x,y,z);d.rotation.set(rx,ry,rz);d.scale.setScalar(P[o+9]*clamp((actF-i)*.125,0,1));d.updateMatrix();petals.setMatrixAt(i,d.matrix)}
+   petals.count=n;petals.instanceMatrix.needsUpdate=true;petals.visible=n>0}
+  // ---- bokeh petals (bade, soft, paas) ----
+  {const actF=NB*qpv*pf*(.25+.75*I)*calm,n=Math.min(NB,Math.ceil(actF)),U=-(.35+1.05*I)*.22,V=-(.14+.4*I)*.22;
+   for(let i=0;i<n;i++){const o=i*12;let x=BK[o],y=BK[o+1];const z=BK[o+2];
+     wind(x*.6,y*.6,z,t*.7);x+=(U+wu*.1)*dt;y+=(V+wv*.08)*dt;
+     const hh=-z*tanH,hw=hh*asp*1.12,m=.4+(-z)*.15;
+     if(x<cx-hw-m||y<cy-hh-m||x>cx+hw+m+.6||y>cy+hh+m+.6){respawn(BK,o,z,false,1.5);x=BK[o];y=BK[o+1]}else{BK[o]=x;BK[o+1]=y}
+     const rz=BK[o+5]+=BK[o+6]*dt;
+     d.position.set(x,y,z);d.rotation.set(0,0,rz);d.scale.setScalar(BK[o+9]*clamp((actF-i)*.2,0,1));d.updateMatrix();bokeh.setMatrixAt(i,d.matrix)}
+   bokeh.count=n;bokeh.instanceMatrix.needsUpdate=true;bokeh.visible=n>0}
+  // ---- dust ----
+  {const n=Math.max(40,Math.floor(ND*qpv));
+   for(let i=0;i<n;i++){const o=i*6,z=DU[o+2],ph=DU[o+3];let x=DU[o]+(Math.sin(t*.5+ph)*.05-.06)*dt*DU[o+4]*3,y=DU[o+1]+(.035+Math.cos(t*.4+ph)*.04)*dt*DU[o+4]*3;
+     const hh=-z*tanH,hw=hh*asp*1.12,m=.6;
+     if(x<cx-hw-m)x+=2*(hw+m);else if(x>cx+hw+m)x-=2*(hw+m);if(y>cy+hh+m)y-=2*(hh+m);else if(y<cy-hh-m)y+=2*(hh+m);
+     DU[o]=x;DU[o+1]=y;dpos[i*3]=x;dpos[i*3+1]=y;dpos[i*3+2]=z}
+   dgeo.setDrawRange(0,n);dgeo.attributes.position.needsUpdate=true;dust.material.opacity=.45+.2*I}
+  // ---- mist ----
+  {const n=Math.round(NM*qpv),k=MIST_OPACITY*(.55+.45*(1-I*.7));
+   for(let i=0;i<NM;i++){const m=mist[i];m.s.visible=i<n;if(i>=n)continue;const hz=-m.z*tanH,wz=hz*asp;
+     m.s.position.set(m.xn*wz+Math.sin(t*.05+m.ph)*wz*.18,m.yn*hz,m.z);m.s.material.opacity=m.op*k*(.8+.2*Math.sin(t*.3+m.ph))}}
+  // ---- god rays ----
+  rays.material.opacity=RAYS*(.12+.1*I+.03*Math.sin(t*.6));rays.material.rotation=t*.02;rays.visible=RAYS>0&&qpv>.45;
+  // ---- lens flare ----
+  {const lx=-.55-yawN*.06,ly=.62-pitchN*.05,hz=2*tanH,k=FLARE*(.18+.2*I)*(.75+.25*Math.sin(t*.7));
+   for(let i=0;i<FL.length;i++){const f=FL[i];f.s.visible=FLARE>0&&qpv>.5;f.s.position.set(lx*f.k*hz*asp,ly*f.k*hz,-2);f.s.scale.set(f.sz*2*hz,f.sz*2*hz,1);f.s.material.opacity=k*(i%2?.7:1)}}
+  // ---- tap flash ----
+  if(flashT<.5){flashT+=dt;const u=clamp(flashT/.5,0,1);flash.material.opacity=(1-u)*(1-u)*.55;flash.scale.setScalar(.5+u*1.6);flash.visible=true}else flash.visible=false;
+  // ---- burst pool ----
+  if(bAny){let alive=0;
+    for(let i=0;i<BP;i++){const o=i*16;let age=BU[o+13];const life=BU[o+14];
+      if(age>=life){continue}
+      age+=dt;if(age>=life){age=life;BU[o+13]=age;d.scale.setScalar(0);d.updateMatrix();burst.setMatrixAt(i,d.matrix);continue}
+      BU[o+13]=age;alive++;
+      const dr=Math.exp(-1.7*dt);let vx=BU[o+3],vy=BU[o+4],vz=BU[o+5];wind(BU[o],BU[o+1],BU[o+2],t);
+      vx=vx*dr+wu*.5*dt;vy=vy*dr-.9*dt+wv*.4*dt;vz*=dr;BU[o+3]=vx;BU[o+4]=vy;BU[o+5]=vz;
+      BU[o]+=vx*dt;BU[o+1]+=vy*dt;BU[o+2]=Math.min(-1.1,BU[o+2]+vz*dt);
+      const u=age/life,vis=sstep(0,.08,u)*(1-sstep(.55,1,u));
+      d.position.set(BU[o],BU[o+1],BU[o+2]);d.rotation.set(BU[o+6]+=BU[o+9]*dt,BU[o+7]+=BU[o+10]*dt,BU[o+8]+=BU[o+11]*dt);d.scale.setScalar(BU[o+12]*vis);d.updateMatrix();burst.setMatrixAt(i,d.matrix)}
+    burst.instanceMatrix.needsUpdate=true;if(!alive){bAny=false;burst.visible=false}}
+}
+function doBurst(sx,sy,n){
+  const z=-2.6,hh=-z*tanH,hw=hh*asp,x0=cam.position.x+((sx/W)*2-1)*hw,y0=cam.position.y-((sy/H)*2-1)*hh;
+  n=Math.min(n,BP);
+  for(let k=0;k<n;k++){const j=bNext;bNext=(bNext+1)%BP;const o=j*16,a=rnd(0,6.2832),sp=rnd(.7,3.1)*Math.sqrt(Math.random()+.15);
+    BU[o]=x0+Math.cos(a)*.05;BU[o+1]=y0+Math.sin(a)*.05;BU[o+2]=z+rnd(-.5,.4);
+    BU[o+3]=Math.cos(a)*sp;BU[o+4]=Math.sin(a)*sp+.55;BU[o+5]=rnd(-.1,.5);
+    BU[o+6]=rnd(0,6.3);BU[o+7]=rnd(0,6.3);BU[o+8]=rnd(0,6.3);BU[o+9]=rnd(-5,5);BU[o+10]=rnd(-5,5);BU[o+11]=rnd(-5,5);
+    BU[o+12]=rnd(.025,.06)*2*tanH*(-BU[o+2])/1.4;BU[o+13]=0;BU[o+14]=rnd(1.2,1.6)}
+  bAny=true;burst.visible=true;flashT=0;flash.position.set(x0,y0,z)
+}
+resize();
+return{update,render(){R.render(scene,cam)},resize,applyPR,burst:doBurst,cam,counts:{NP,NB,ND,NM,BP}};
+}
+if(R){try{S=buildScene();G.S=S}catch(err){console.error('scene build failed',err);R=null;S=null}}
+if(!S)document.body.classList.add('nogl');
+
+/* ===================== main loop ===================== */
+let typed=0,shown=-1,endT=0,introOn=false,hintOn=false,Ismooth=.28,last=0,frames=0,accDt=0,accN=0,goodN=0,msEMA=0,fpsEMA=60,secHide=false;
+const MCH=Array.from(MESSAGE),dbgEl=$('dbg'),DEBUG=/[?#&]debug/.test(location.href);
+if(DEBUG)dbgEl.style.display='block';
+
+function applyQ(){ // qp/PR ko sab effects par lagao (test: qp=.4;PR=.6;applyQ())
+  if(S)S.applyPR();
+  $('grain').style.display=qp<.6?'none':'block';
+}
+function tick(dt){
+  const t0=performance.now();
+  dt=Math.min(Math.max(dt||0,0),.05);clk+=dt;
+  const t=G.tOverride!=null?G.tOverride:(vid.currentTime||0);
+  // intensity (timeline sync)
+  const target=curveAt(t)*(ended?.55:1);
+  Ismooth+=(target-Ismooth)*(1-Math.exp(-dt*2.2));G.I=Ismooth;
+  // drag smoothing + idle recenter + halka sway
+  if(!dragging&&clk-lastAct>2.5){const k=Math.exp(-dt*.35);yawT*=k;pitchT*=k}
+  const sw=dragging?0:1,tY=yawT+Math.sin(clk*.23)*.05*sw,tP=pitchT+Math.sin(clk*.17+1)*.035*sw,sm=1-Math.exp(-dt*6.5);
+  yaw+=(tY-yaw)*sm;pitch+=(tP-pitch)*sm;G.yaw=yaw;G.pitch=pitch;
+  if(S)S.update(dt,clk,Ismooth,yaw,pitch,qp,1);
+  // ---- text layer ----
+  const inIntro=started&&!ended&&t>=INTRO[0]&&t<INTRO[1];
+  if(inIntro!==introOn){introOn=inIntro;$('intro').classList.toggle('on',inIntro)}
+  const wantHint=started&&!ended&&t>INTRO[1]+.5&&t<INTRO[1]+7.5;
+  if(wantHint!==hintOn){hintOn=wantHint;$('hint').classList.toggle('on',wantHint)}
+  if(ended){endT+=dt;
+    if(endT>1.6&&shown<MCH.length){typed+=dt*TYPE_CPS;const n=Math.min(MCH.length,Math.floor(typed));
+      if(n!==shown){shown=n;$('mt').textContent=MCH.slice(0,n).join('')}
+      if(n>=MCH.length)document.body.classList.add('done')}}
+  G.jsMs=msEMA=lerp(msEMA,performance.now()-t0,.05);
+}
+function adapt(dt){
+  fpsEMA=lerp(fpsEMA,1/Math.max(dt,.001),.05);G.fps=fpsEMA;
+  if(adj>=99||!S)return;frames++;if(frames<90)return;
+  accDt+=Math.min(dt,.1);accN++;
+  if(accN>=45){const a=accDt/accN;accDt=0;accN=0;
+    if(a>1/42&&qp>.41){qp=Math.max(.4,qp-.12);adj++;goodN=0;applyQ()}
+    else if(a<1/57){if(++goodN>=8&&qp<1){qp=Math.min(1,qp+.06);goodN=0;applyQ()}}else goodN=0}
+}
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=(now-last)/1000;last=now;
+  tick(dt);if(S)S.render();adapt(dt);
+  if(DEBUG&&(frames&15)===0){dbgEl.textContent='fps '+fpsEMA.toFixed(0)+'  js '+msEMA.toFixed(2)+'ms\nqp '+qp.toFixed(2)+'  adj '+adj+'  I '+Ismooth.toFixed(2)+'\nt '+(vid.currentTime||0).toFixed(1)}
+}
+G.tick=tick;
+addEventListener('resize',()=>{if(S)S.resize()});
+addEventListener('orientationchange',()=>setTimeout(()=>{if(S)S.resize()},250));
+syncSnd();applyQ();
+requestAnimationFrame(frame);
+window.G=G;
+</script>
+</body></html>
