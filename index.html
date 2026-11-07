@@ -185,18 +185,18 @@ const P=new Float32Array(NP*12),BK=new Float32Array(NB*12),DU=new Float32Array(N
 const pg=new THREE.PlaneGeometry(1,1.4,2,4),pgp=pg.attributes.position;
 for(let i=0;i<pgp.count;i++){const x=pgp.getX(i),y=pgp.getY(i);pgp.setZ(i,x*x*.7+y*y*.12)}
 const petals=new THREE.InstancedMesh(pg,new THREE.MeshBasicMaterial({map:petalTex,side:THREE.DoubleSide,opacity:.95,...NOPT}),NP);
-const bokeh=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1.2),new THREE.MeshBasicMaterial({map:bokehTex,opacity:.5,...NOPT}),NB);
+const bokeh=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1.2),new THREE.MeshBasicMaterial({map:bokehTex,opacity:.72,...NOPT}),NB);
 const burst=new THREE.InstancedMesh(pg,new THREE.MeshBasicMaterial({map:petalTex,side:THREE.DoubleSide,opacity:.97,...NOPT}),BP);
 [petals,bokeh,burst].forEach(m=>{m.frustumCulled=false});
 petals.renderOrder=4;bokeh.renderOrder=7;burst.renderOrder=8;
 function pickCol(c,z){const r=Math.random();
-  if(r<.12)c.setHSL(.95,.3,.9);else if(r<.22)c.setHSL(rnd(.76,.82),.45,rnd(.78,.88));else c.setHSL(rnd(.88,.985),rnd(.45,.92),rnd(.62,.86));
-  const f=clamp((-z-1.2)/7,0,1)*.38;c.r=lerp(c.r,.96,f);c.g=lerp(c.g,.80,f);c.b=lerp(c.b,.92,f);return c}
+  if(r<.12)c.setHSL(.95,.3,.9);else if(r<.22)c.setHSL(rnd(.76,.82),.45,rnd(.78,.88));else c.setHSL(rnd(.88,.985),rnd(.6,1),rnd(.55,.8));
+  const f=clamp((-z-1.2)/7,0,1)*.2;c.r=lerp(c.r,.96,f);c.g=lerp(c.g,.80,f);c.b=lerp(c.b,.92,f);return c}
 for(let i=0;i<NP;i++){const o=i*12,z=-rnd(1.2,8);P[o+2]=z;
-  const a=Math.random()<.06?rnd(.04,.07):rnd(.011,.032);P[o+9]=a*2*tanH*(-z)/1.4;
+  const a=Math.random()<.14?rnd(.07,.13):rnd(.022,.055);P[o+9]=a*2*tanH*(-z)/1.4;
   P[o+3]=rnd(0,6.3);P[o+4]=rnd(0,6.3);P[o+5]=rnd(0,6.3);P[o+6]=rnd(-2.2,2.2);P[o+7]=rnd(-2.2,2.2);P[o+8]=rnd(-2.2,2.2);
   petals.setColorAt(i,pickCol(col,z));d.position.set(0,0,z);d.scale.setScalar(0);d.updateMatrix();petals.setMatrixAt(i,d.matrix)}
-for(let i=0;i<NB;i++){const o=i*12,z=-rnd(1,2.3);BK[o+2]=z;const a=rnd(.07,.17);BK[o+9]=a*2*tanH*(-z)/1.2;BK[o+5]=rnd(0,6.3);BK[o+6]=rnd(-.5,.5);
+for(let i=0;i<NB;i++){const o=i*12,z=-rnd(1,2.3);BK[o+2]=z;const a=rnd(.12,.3);BK[o+9]=a*2*tanH*(-z)/1.2;BK[o+5]=rnd(0,6.3);BK[o+6]=rnd(-.5,.5);
   bokeh.setColorAt(i,pickCol(col,-2));d.position.set(0,0,z);d.scale.setScalar(0);d.updateMatrix();bokeh.setMatrixAt(i,d.matrix)}
 for(let i=0;i<BP;i++){BU[i*16+13]=1;BU[i*16+14]=1;burst.setColorAt(i,col.setHSL(rnd(.86,.98),rnd(.5,.95),rnd(.66,.9)));d.scale.setScalar(0);d.updateMatrix();burst.setMatrixAt(i,d.matrix)}
 burst.visible=false;
@@ -204,7 +204,7 @@ scene.add(petals);scene.add(bokeh);scene.add(burst);
 
 // mist sheets (kam, bade, halke)
 const mist=[];for(let i=0;i<NM;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:mistTex,color:i%2?0xffd8f0:0xffffff,opacity:0,...NOPT}));
-  s.renderOrder=1;mist.push({s,z:-rnd(3.5,8.5),xn:rnd(-.8,.8),yn:rnd(-.85,.1),wn:rnd(1.1,1.6),hn:rnd(.4,.65),ph:rnd(0,6.3),op:rnd(.1,.17)});scene.add(s)}
+  s.renderOrder=1;mist.push({s,z:-rnd(3.5,8.5),xn:rnd(-.8,.8),yn:rnd(-.85,.1),wn:rnd(1.1,1.6),hn:rnd(.4,.65),ph:rnd(0,6.3),op:rnd(.17,.27)});scene.add(s)}
 // god rays
 const rays=new THREE.Sprite(new THREE.SpriteMaterial({map:raysTex,blending:THREE.AdditiveBlending,opacity:0,...NOPT}));rays.renderOrder=2;scene.add(rays);
 // dust (Points)
@@ -253,7 +253,7 @@ function update(dt,t,I,yawN,pitchN,qpv,calm){
   cam.position.set(-yawN*Cx,pitchN*Cy,0);cam.rotation.set(pitchN*rad(MAXPITCH)*CAM_PITCH,yawN*rad(MAXYAW)*CAM_YAW,0);
   const pf=clamp(asp/1.2,.55,1),cx=cam.position.x,cy=cam.position.y;
   // ---- petals ----
-  {const actF=NP*qpv*pf*(.16+.84*I)*calm,n=Math.min(NP,Math.ceil(actF)),U=-(.35+1.05*I),V=-(.14+.4*I),ca=.45+.75*I,rs=.7+1.6*I;
+  {const actF=NP*qpv*pf*(.45+.55*I)*calm,n=Math.min(NP,Math.ceil(actF)),U=-(.35+1.05*I),V=-(.14+.4*I),ca=.45+.75*I,rs=.7+1.6*I;
    for(let i=0;i<n;i++){const o=i*12;let x=P[o],y=P[o+1];const z=P[o+2];
      wind(x,y,z,t);x+=(U+wu*ca)*dt;y+=(V+wv*ca*.8)*dt;
      const hh=-z*tanH,hw=hh*asp*1.12,m=.5+(-z)*.1;
@@ -262,7 +262,7 @@ function update(dt,t,I,yawN,pitchN,qpv,calm){
      d.position.set(x,y,z);d.rotation.set(rx,ry,rz);d.scale.setScalar(P[o+9]*clamp((actF-i)*.125,0,1));d.updateMatrix();petals.setMatrixAt(i,d.matrix)}
    petals.count=n;petals.instanceMatrix.needsUpdate=true;petals.visible=n>0}
   // ---- bokeh petals (bade, soft, paas) ----
-  {const actF=NB*qpv*pf*(.25+.75*I)*calm,n=Math.min(NB,Math.ceil(actF)),U=-(.35+1.05*I)*.22,V=-(.14+.4*I)*.22;
+  {const actF=NB*qpv*pf*(.6+.4*I)*calm,n=Math.min(NB,Math.ceil(actF)),U=-(.35+1.05*I)*.22,V=-(.14+.4*I)*.22;
    for(let i=0;i<n;i++){const o=i*12;let x=BK[o],y=BK[o+1];const z=BK[o+2];
      wind(x*.6,y*.6,z,t*.7);x+=(U+wu*.1)*dt;y+=(V+wv*.08)*dt;
      const hh=-z*tanH,hw=hh*asp*1.12,m=.4+(-z)*.15;
@@ -282,7 +282,7 @@ function update(dt,t,I,yawN,pitchN,qpv,calm){
    for(let i=0;i<NM;i++){const m=mist[i];m.s.visible=i<n;if(i>=n)continue;const hz=-m.z*tanH,wz=hz*asp;
      m.s.position.set(m.xn*wz+Math.sin(t*.05+m.ph)*wz*.18,m.yn*hz,m.z);m.s.material.opacity=m.op*k*(.8+.2*Math.sin(t*.3+m.ph))}}
   // ---- god rays ----
-  rays.material.opacity=RAYS*(.12+.1*I+.03*Math.sin(t*.6));rays.material.rotation=t*.02;rays.visible=RAYS>0&&qpv>.45;
+  rays.material.opacity=RAYS*(.22+.15*I+.03*Math.sin(t*.6));rays.material.rotation=t*.02;rays.visible=RAYS>0&&qpv>.45;
   // ---- lens flare ----
   {const lx=-.55-yawN*.06,ly=.62-pitchN*.05,hz=2*tanH,k=FLARE*(.18+.2*I)*(.75+.25*Math.sin(t*.7));
    for(let i=0;i<FL.length;i++){const f=FL[i];f.s.visible=FLARE>0&&qpv>.5;f.s.position.set(lx*f.k*hz*asp,ly*f.k*hz,-2);f.s.scale.set(f.sz*2*hz,f.sz*2*hz,1);f.s.material.opacity=k*(i%2?.7:1)}}
@@ -308,7 +308,7 @@ function doBurst(sx,sy,n){
     BU[o]=x0+Math.cos(a)*.05;BU[o+1]=y0+Math.sin(a)*.05;BU[o+2]=z+rnd(-.5,.4);
     BU[o+3]=Math.cos(a)*sp;BU[o+4]=Math.sin(a)*sp+.55;BU[o+5]=rnd(-.1,.5);
     BU[o+6]=rnd(0,6.3);BU[o+7]=rnd(0,6.3);BU[o+8]=rnd(0,6.3);BU[o+9]=rnd(-5,5);BU[o+10]=rnd(-5,5);BU[o+11]=rnd(-5,5);
-    BU[o+12]=rnd(.025,.06)*2*tanH*(-BU[o+2])/1.4;BU[o+13]=0;BU[o+14]=rnd(1.2,1.6)}
+    BU[o+12]=rnd(.05,.1)*2*tanH*(-BU[o+2])/1.4;BU[o+13]=0;BU[o+14]=rnd(1.2,1.6)}
   bAny=true;burst.visible=true;flashT=0;flash.position.set(x0,y0,z)
 }
 resize();
